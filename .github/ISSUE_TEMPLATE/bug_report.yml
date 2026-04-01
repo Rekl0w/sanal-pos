@@ -1,0 +1,66 @@
+name: Bug report
+description: Report a reproducible problem in @rekl0w/sanal-pos
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Teşekkürler. Lütfen gizli anahtarları, gerçek kart bilgilerini veya kişisel verileri paylaşmayın.
+  - type: input
+    id: bank-code
+    attributes:
+      label: Bank code
+      description: Hangi `bank_code` veya provider etkilendi?
+      placeholder: "9990"
+    validations:
+      required: true
+  - type: dropdown
+    id: runtime
+    attributes:
+      label: Runtime
+      options:
+        - Node.js
+        - Bun
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: operation
+    attributes:
+      label: Operation
+      options:
+        - sale
+        - sale3DResponse
+        - cancel
+        - refund
+        - binInstallmentQuery
+        - allInstallmentQuery
+        - additionalInstallmentQuery
+        - saleQuery
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Beklenen ve gerçekleşen davranışı yazın.
+    validations:
+      required: true
+  - type: textarea
+    id: request
+    attributes:
+      label: Sanitized request / response
+      description: Gizli alanları maskeleyerek paylaşın.
+      render: json
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      render: markdown
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: 0.1.0

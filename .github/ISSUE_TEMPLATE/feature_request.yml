@@ -1,0 +1,28 @@
+name: Feature request
+description: Suggest a new capability, gateway, or DX improvement
+labels: [enhancement]
+body:
+  - type: input
+    id: gateway
+    attributes:
+      label: Related gateway or area
+      placeholder: "IPara / PayTR / documentation / npm packaging"
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / use case
+      description: Hangi ihtiyacı çözmek istiyorsunuz?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Mümkünse beklenen API veya davranışı yazın.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Referans repo, banka dokümanı veya örnek response gibi bilgiler.
