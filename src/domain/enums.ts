@@ -74,7 +74,9 @@ export const GatewayFamilies = [
 export type GatewayFamily = (typeof GatewayFamilies)[number];
 
 export const currencyNameFromCode = (currency: CurrencyCode): CurrencyKey => {
-  const match = Object.entries(CurrencyMap).find(([, value]) => value === currency);
+  const match = Object.entries(CurrencyMap).find(
+    ([, value]) => value === currency,
+  );
 
   if (!match) {
     return "TRY";

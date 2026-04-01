@@ -29,7 +29,10 @@ import type {
   SaleResponse,
 } from "../domain/types";
 import { BankService } from "../services/bank-service";
-import { sanitizeCustomerInfo, sanitizeSaleInfo } from "../services/sanitizer-service";
+import {
+  sanitizeCustomerInfo,
+  sanitizeSaleInfo,
+} from "../services/sanitizer-service";
 import {
   assertIssues,
   validateBINInstallmentQuery,
@@ -42,7 +45,10 @@ import {
 } from "../services/validation-service";
 
 export class SanalPosClient {
-  static async sale(input: SaleRequest, authInput: MerchantAuth): Promise<SaleResponse> {
+  static async sale(
+    input: SaleRequest,
+    authInput: MerchantAuth,
+  ): Promise<SaleResponse> {
     const request = SaleRequestSchema.parse(input);
     const auth = MerchantAuthSchema.parse(authInput);
 
@@ -85,7 +91,10 @@ export class SanalPosClient {
 
     assertIssues(validateSale3DResponseRequest(normalizedRequest, auth));
 
-    return this.getGateway(auth.bank_code).sale3DResponse(normalizedRequest, auth);
+    return this.getGateway(auth.bank_code).sale3DResponse(
+      normalizedRequest,
+      auth,
+    );
   }
 
   static async binInstallmentQuery(
@@ -122,10 +131,16 @@ export class SanalPosClient {
 
     assertIssues(validateMerchantAuth(auth));
 
-    return this.getGateway(auth.bank_code).additionalInstallmentQuery(request, auth);
+    return this.getGateway(auth.bank_code).additionalInstallmentQuery(
+      request,
+      auth,
+    );
   }
 
-  static async cancel(input: CancelRequest, authInput: MerchantAuth): Promise<CancelResponse> {
+  static async cancel(
+    input: CancelRequest,
+    authInput: MerchantAuth,
+  ): Promise<CancelResponse> {
     const request = CancelRequestSchema.parse(input);
     const auth = MerchantAuthSchema.parse(authInput);
 
@@ -135,7 +150,10 @@ export class SanalPosClient {
     return this.getGateway(auth.bank_code).cancel(request, auth);
   }
 
-  static async refund(input: RefundRequest, authInput: MerchantAuth): Promise<RefundResponse> {
+  static async refund(
+    input: RefundRequest,
+    authInput: MerchantAuth,
+  ): Promise<RefundResponse> {
     const request = RefundRequestSchema.parse(input);
     const auth = MerchantAuthSchema.parse(authInput);
 
@@ -145,7 +163,10 @@ export class SanalPosClient {
     return this.getGateway(auth.bank_code).refund(request, auth);
   }
 
-  static async saleQuery(input: SaleQueryRequest, authInput: MerchantAuth): Promise<SaleQueryResponse> {
+  static async saleQuery(
+    input: SaleQueryRequest,
+    authInput: MerchantAuth,
+  ): Promise<SaleQueryResponse> {
     const request = SaleQueryRequestSchema.parse(input);
     const auth = MerchantAuthSchema.parse(authInput);
 

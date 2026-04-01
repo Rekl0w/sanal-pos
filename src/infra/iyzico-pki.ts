@@ -53,7 +53,9 @@ export const toPKIRequestString = (input: unknown): string => {
     }
 
     if (Array.isArray(value)) {
-      parts.push(`${key}=[${value.map((item) => toPKIRequestString(item)).join(", ")}]`);
+      parts.push(
+        `${key}=[${value.map((item) => toPKIRequestString(item)).join(", ")}]`,
+      );
       continue;
     }
 
@@ -62,7 +64,9 @@ export const toPKIRequestString = (input: unknown): string => {
       continue;
     }
 
-    const normalized = /price|paidPrice/i.test(key) ? iyzicoFormatPrice(String(value)) : String(value);
+    const normalized = /price|paidPrice/i.test(key)
+      ? iyzicoFormatPrice(String(value))
+      : String(value);
     parts.push(`${key}=${normalized}`);
   }
 
@@ -74,7 +78,10 @@ export const iyzicoHeaders = (
   secretKey: string,
   request: Record<string, unknown>,
 ): Record<string, string> => {
-  const rnd = `${new Date().toISOString().replace(/[-:.TZ]/g, "").slice(0, 14)}${String(Date.now()).slice(-4)}`;
+  const rnd = `${new Date()
+    .toISOString()
+    .replace(/[-:.TZ]/g, "")
+    .slice(0, 14)}${String(Date.now()).slice(-4)}`;
   const hashInput = `${apiKey}${rnd}${secretKey}${toPKIRequestString(request)}`;
   const hash = createHash("sha1").update(hashInput).digest("base64");
   const authorization = `IYZWS ${apiKey}:${hash}`;
@@ -88,8 +95,14 @@ export const iyzicoHeaders = (
   };
 };
 
-export const jwtHs512 = (kid: string, rawKey: Uint8Array, payload: Record<string, unknown>): string => {
-  const header = base64UrlEncode(JSON.stringify({ alg: "HS512", typ: "JWT", kidValue: kid }));
+export const jwtHs512 = (
+  kid: string,
+  rawKey: Uint8Array,
+  payload: Record<string, unknown>,
+): string => {
+  const header = base64UrlEncode(
+    JSON.stringify({ alg: "HS512", typ: "JWT", kidValue: kid }),
+  );
   const body = base64UrlEncode(JSON.stringify(payload));
   const input = `${header}.${body}`;
   const signature = createHmac("sha512", rawKey).update(input).digest();

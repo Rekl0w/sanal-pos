@@ -83,7 +83,8 @@ export class BankService {
       throw new UnsupportedGatewayError(bankCode);
     }
 
-    const realGateway = createRealBankGateway(bank) ?? createRealProviderGateway(bank);
+    const realGateway =
+      createRealBankGateway(bank) ?? createRealProviderGateway(bank);
     if (realGateway) {
       return realGateway;
     }

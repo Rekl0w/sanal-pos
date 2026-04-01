@@ -1,4 +1,8 @@
-import { ResponseStatus, SaleQueryResponseStatus, SaleResponseStatus } from "../domain/enums";
+import {
+  ResponseStatus,
+  SaleQueryResponseStatus,
+  SaleResponseStatus,
+} from "../domain/enums";
 import type {
   AdditionalInstallmentCampaign,
   AdditionalInstallmentQueryRequest,
@@ -32,7 +36,11 @@ const hashString = (value: string): string => {
 
 const toIsoString = (): string => new Date().toISOString();
 
-const buildTransactionId = (bank: BankDefinition, orderNumber: string, action: string): string =>
+const buildTransactionId = (
+  bank: BankDefinition,
+  orderNumber: string,
+  action: string,
+): string =>
   `${bank.bank_code}-${action}-${hashString(`${orderNumber}:${action}`)}`;
 
 const extractCallbackField = (
@@ -54,7 +62,10 @@ export class SandboxGateway extends AbstractGateway {
     super(bank);
   }
 
-  override async sale(request: SaleRequest, _auth: MerchantAuth): Promise<SaleResponse> {
+  override async sale(
+    request: SaleRequest,
+    _auth: MerchantAuth,
+  ): Promise<SaleResponse> {
     const orderNumber = request.order_number ?? "ORDER";
 
     if (request.payment_3d?.confirm) {
@@ -87,19 +98,40 @@ export class SandboxGateway extends AbstractGateway {
     };
   }
 
-  override async sale3DResponse(request: Sale3DResponseRequest, _auth: MerchantAuth): Promise<SaleResponse> {
-    const mdStatus = extractCallbackField(request.responseArray, "mdStatus", "mdstatus");
+  override async sale3DResponse(
+    request: Sale3DResponseRequest,
+    _auth: MerchantAuth,
+  ): Promise<SaleResponse> {
+    const mdStatus = extractCallbackField(
+      request.responseArray,
+      "mdStatus",
+      "mdstatus",
+    );
     const processCode = extractCallbackField(
       request.responseArray,
       "procReturnCode",
       "ProcReturnCode",
       "responseCode",
     );
-    const orderNumber = extractCallbackField(request.responseArray, "orderId", "oid", "OrderId") ?? "UNKNOWN";
-    const transactionId = extractCallbackField(request.responseArray, "transId", "TransId", "txnId") ??
-      buildTransactionId(this.bank, orderNumber, "3D");
+    const orderNumber =
+      extractCallbackField(
+        request.responseArray,
+        "orderId",
+        "oid",
+        "OrderId",
+      ) ?? "UNKNOWN";
+    const transactionId =
+      extractCallbackField(
+        request.responseArray,
+        "transId",
+        "TransId",
+        "txnId",
+      ) ?? buildTransactionId(this.bank, orderNumber, "3D");
 
-    if (["1", "2", "3", "4"].includes(mdStatus ?? "") && (!processCode || processCode === "00")) {
+    if (
+      ["1", "2", "3", "4"].includes(mdStatus ?? "") &&
+      (!processCode || processCode === "00")
+    ) {
       return {
         status: SaleResponseStatus.Success,
         message: `${this.bank.bank_name} 3D doğrulama başarılı`,
@@ -115,7 +147,13 @@ export class SandboxGateway extends AbstractGateway {
 
     return {
       status: SaleResponseStatus.Error,
-      message: extractCallbackField(request.responseArray, "ErrMsg", "mdErrorMsg", "message") ?? "3D doğrulama başarısız",
+      message:
+        extractCallbackField(
+          request.responseArray,
+          "ErrMsg",
+          "mdErrorMsg",
+          "message",
+        ) ?? "3D doğrulama başarısız",
       order_number: orderNumber,
       transaction_id: transactionId,
       private_response: {
@@ -141,7 +179,9 @@ export class SandboxGateway extends AbstractGateway {
     const installments = [this.bank].map((bank) => ({
       bank_code: bank.bank_code,
       bank_name: bank.bank_name,
-      installment_list: BinService.resolveInstallments(amount, [bank.bank_code]),
+      installment_list: BinService.resolveInstallments(amount, [
+        bank.bank_code,
+      ]),
     }));
 
     return {
@@ -182,9 +222,14 @@ export class SandboxGateway extends AbstractGateway {
     };
   }
 
-  override async cancel(request: CancelRequest, _auth: MerchantAuth): Promise<CancelResponse> {
+  override async cancel(
+    request: CancelRequest,
+    _auth: MerchantAuth,
+  ): Promise<CancelResponse> {
     return {
-      status: this.bank.supports_cancel ? ResponseStatus.Success : ResponseStatus.Error,
+      status: this.bank.supports_cancel
+        ? ResponseStatus.Success
+        : ResponseStatus.Error,
       message: this.bank.supports_cancel
         ? `${this.bank.bank_name} sandbox iptal işlemi başarılı`
         : `${this.bank.bank_name} için iptal işlemi desteklenmiyor`,
@@ -196,9 +241,14 @@ export class SandboxGateway extends AbstractGateway {
     };
   }
 
-  override async refund(request: RefundRequest, _auth: MerchantAuth): Promise<RefundResponse> {
+  override async refund(
+    request: RefundRequest,
+    _auth: MerchantAuth,
+  ): Promise<RefundResponse> {
     return {
-      status: this.bank.supports_refund ? ResponseStatus.Success : ResponseStatus.Error,
+      status: this.bank.supports_refund
+        ? ResponseStatus.Success
+        : ResponseStatus.Error,
       message: this.bank.supports_refund
         ? `${this.bank.bank_name} sandbox iade işlemi başarılı`
         : `${this.bank.bank_name} için iade işlemi desteklenmiyor`,
@@ -211,7 +261,10 @@ export class SandboxGateway extends AbstractGateway {
     };
   }
 
-  override async saleQuery(request: SaleQueryRequest, _auth: MerchantAuth): Promise<SaleQueryResponse> {
+  override async saleQuery(
+    request: SaleQueryRequest,
+    _auth: MerchantAuth,
+  ): Promise<SaleQueryResponse> {
     const orderNumber = request.order_number ?? "UNKNOWN";
 
     return {

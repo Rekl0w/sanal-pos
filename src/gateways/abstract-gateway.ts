@@ -1,4 +1,8 @@
-import { ResponseStatus, SaleQueryResponseStatus, SaleResponseStatus } from "../domain/enums";
+import {
+  ResponseStatus,
+  SaleQueryResponseStatus,
+  SaleResponseStatus,
+} from "../domain/enums";
 import type {
   AdditionalInstallmentQueryRequest,
   AdditionalInstallmentQueryResponse,
@@ -27,14 +31,20 @@ export abstract class AbstractGateway implements VirtualPosGateway {
     this.bank = bank;
   }
 
-  async sale(_request: SaleRequest, _auth: MerchantAuth): Promise<SaleResponse> {
+  async sale(
+    _request: SaleRequest,
+    _auth: MerchantAuth,
+  ): Promise<SaleResponse> {
     return {
       status: SaleResponseStatus.Error,
       message: "Bu banka için satış metodu henüz tanımlanmamış!",
     };
   }
 
-  async sale3DResponse(_request: Sale3DResponseRequest, _auth: MerchantAuth): Promise<SaleResponse> {
+  async sale3DResponse(
+    _request: Sale3DResponseRequest,
+    _auth: MerchantAuth,
+  ): Promise<SaleResponse> {
     return {
       status: SaleResponseStatus.Error,
       message: "Bu banka için 3D satış sonucu metodu henüz tanımlanmamış!",
@@ -71,21 +81,30 @@ export abstract class AbstractGateway implements VirtualPosGateway {
     };
   }
 
-  async cancel(_request: CancelRequest, _auth: MerchantAuth): Promise<CancelResponse> {
+  async cancel(
+    _request: CancelRequest,
+    _auth: MerchantAuth,
+  ): Promise<CancelResponse> {
     return {
       status: ResponseStatus.Error,
       message: "Bu banka için iptal metodu henüz tanımlanmamış!",
     };
   }
 
-  async refund(_request: RefundRequest, _auth: MerchantAuth): Promise<RefundResponse> {
+  async refund(
+    _request: RefundRequest,
+    _auth: MerchantAuth,
+  ): Promise<RefundResponse> {
     return {
       status: ResponseStatus.Error,
       message: "Bu banka için iade metodu henüz tanımlanmamış!",
     };
   }
 
-  async saleQuery(_request: SaleQueryRequest, _auth: MerchantAuth): Promise<SaleQueryResponse> {
+  async saleQuery(
+    _request: SaleQueryRequest,
+    _auth: MerchantAuth,
+  ): Promise<SaleQueryResponse> {
     return {
       status: SaleQueryResponseStatus.Error,
       message: "Bu sanal pos için satış sorgulama işlemi şu an desteklenmiyor",

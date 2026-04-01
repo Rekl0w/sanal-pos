@@ -4,24 +4,31 @@ import { CurrencyMap } from "../domain/enums";
 
 export const formatAmount = (amount: number): string => amount.toFixed(2);
 
-export const toKurus = (amount: number): string => formatAmount(amount).replace(/[.,]/g, "");
+export const toKurus = (amount: number): string =>
+  formatAmount(amount).replace(/[.,]/g, "");
 
-export const sha1Base64 = (value: string): string => createHash("sha1").update(value).digest("base64");
+export const sha1Base64 = (value: string): string =>
+  createHash("sha1").update(value).digest("base64");
 
-export const sha512Base64 = (value: string): string => createHash("sha512").update(value).digest("base64");
+export const sha512Base64 = (value: string): string =>
+  createHash("sha512").update(value).digest("base64");
 
 export const hmacSha512Base64 = (value: string, key: string): string =>
   createHmac("sha512", key).update(value).digest("base64");
 
-export const sha256Hex = (value: string): string => createHash("sha256").update(value).digest("hex");
+export const sha256Hex = (value: string): string =>
+  createHash("sha256").update(value).digest("hex");
 
-export const sha1Hex = (value: string): string => createHash("sha1").update(value).digest("hex");
+export const sha1Hex = (value: string): string =>
+  createHash("sha1").update(value).digest("hex");
 
 export const sha512HexUpper = (value: string): string =>
   createHash("sha512").update(value).digest("hex").toUpperCase();
 
-export const hmacSha512Base64FromRawKey = (value: string, key: Uint8Array): string =>
-  createHmac("sha512", key).update(value).digest("base64");
+export const hmacSha512Base64FromRawKey = (
+  value: string,
+  key: Uint8Array,
+): string => createHmac("sha512", key).update(value).digest("base64");
 
 export const randomHex = (length: number): string => {
   const bytes = randomBytes(length);
@@ -36,7 +43,9 @@ export const randomHex = (length: number): string => {
 
 export const guid = (): string => randomUUID();
 
-export const parseSemicolonResponse = (response: string): Record<string, string> => {
+export const parseSemicolonResponse = (
+  response: string,
+): Record<string, string> => {
   const result: Record<string, string> = {};
 
   for (const part of response.split(";;").filter(Boolean)) {
@@ -51,7 +60,8 @@ export const parseSemicolonResponse = (response: string): Record<string, string>
 
 export const getFormParams = (html: string): Record<string, string> => {
   const result: Record<string, string> = {};
-  const regex = /<input[^>]*name=["']([^"']+)["'][^>]*value=["']([^"']*)["'][^>]*>/gi;
+  const regex =
+    /<input[^>]*name=["']([^"']+)["'][^>]*value=["']([^"']*)["'][^>]*>/gi;
 
   for (const match of html.matchAll(regex)) {
     const [, name, value] = match;
@@ -63,7 +73,8 @@ export const getFormParams = (html: string): Record<string, string> => {
   return result;
 };
 
-export const clearNumber = (value: string | undefined): string => (value ?? "").replace(/\D/g, "");
+export const clearNumber = (value: string | undefined): string =>
+  (value ?? "").replace(/\D/g, "");
 
 export const detectCardType = (cardNumber: string): string => {
   const cleaned = clearNumber(cardNumber);
@@ -74,7 +85,10 @@ export const detectCardType = (cardNumber: string): string => {
     return "Visa";
   }
 
-  if (["51", "52", "53", "54", "55"].includes(first2) || (first4 >= 2221 && first4 <= 2720)) {
+  if (
+    ["51", "52", "53", "54", "55"].includes(first2) ||
+    (first4 >= 2221 && first4 <= 2720)
+  ) {
     return "MasterCard";
   }
 
@@ -103,23 +117,34 @@ export const ykbCurrencyCode = (currency: number = CurrencyMap.TRY): string => {
   }
 };
 
-export const currencyNumericString = (currency: number = CurrencyMap.TRY): string => String(currency);
+export const currencyNumericString = (
+  currency: number = CurrencyMap.TRY,
+): string => String(currency);
 
-export const currencyPaddedString = (currency: number = CurrencyMap.TRY): string =>
-  String(currency).padStart(4, "0");
+export const currencyPaddedString = (
+  currency: number = CurrencyMap.TRY,
+): string => String(currency).padStart(4, "0");
 
 export const currencyName = (currency: number = CurrencyMap.TRY): string => {
-  const match = Object.entries(CurrencyMap).find(([, value]) => value === currency);
+  const match = Object.entries(CurrencyMap).find(
+    ([, value]) => value === currency,
+  );
   return match?.[0] ?? "TRY";
 };
 
 export const base64UrlEncode = (input: string | Uint8Array): string => {
-  const buffer = typeof input === "string" ? Buffer.from(input) : Buffer.from(input);
-  return buffer.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+  const buffer =
+    typeof input === "string" ? Buffer.from(input) : Buffer.from(input);
+  return buffer
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
 };
 
 export const base64UrlDecode = (input: string): Buffer => {
   const normalized = input.replace(/-/g, "+").replace(/_/g, "/");
-  const padding = normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
+  const padding =
+    normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
   return Buffer.from(normalized + padding, "base64");
 };

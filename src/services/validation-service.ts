@@ -44,7 +44,10 @@ const luhnCheck = (cardNumber: string): boolean => {
   return sum % 10 === 0;
 };
 
-const validateCustomerInfo = (label: string, info: CustomerInfo | undefined): string[] => {
+const validateCustomerInfo = (
+  label: string,
+  info: CustomerInfo | undefined,
+): string[] => {
   if (!info) {
     return [`${label} alanı zorunludur`];
   }
@@ -112,7 +115,10 @@ export const validateSaleInfo = (saleInfo: SaleInfo | undefined): string[] => {
   }
 
   const validCurrencies = new Set<number>(Object.values(CurrencyMap));
-  if (saleInfo.currency !== undefined && !validCurrencies.has(saleInfo.currency)) {
+  if (
+    saleInfo.currency !== undefined &&
+    !validCurrencies.has(saleInfo.currency)
+  ) {
     issues.push("Geçersiz para birimi");
   }
 
@@ -168,7 +174,10 @@ export const validateSaleRequest = (request: SaleRequest): string[] => {
   issues.push(...validateCustomerInfo("invoice_info", request.invoice_info));
   issues.push(...validateCustomerInfo("shipping_info", request.shipping_info));
 
-  if (request.payment_3d?.confirm && !isNonEmptyString(request.payment_3d.return_url)) {
+  if (
+    request.payment_3d?.confirm &&
+    !isNonEmptyString(request.payment_3d.return_url)
+  ) {
     issues.push("payment_3d.return_url alanı 3D işlemler için zorunludur");
   }
 
@@ -178,8 +187,13 @@ export const validateSaleRequest = (request: SaleRequest): string[] => {
 export const validateCancelRequest = (request: CancelRequest): string[] => {
   const issues: string[] = [];
 
-  if (!isNonEmptyString(request.order_number) && !isNonEmptyString(request.transaction_id)) {
-    issues.push("order_number veya transaction_id alanlarından en az biri zorunludur");
+  if (
+    !isNonEmptyString(request.order_number) &&
+    !isNonEmptyString(request.transaction_id)
+  ) {
+    issues.push(
+      "order_number veya transaction_id alanlarından en az biri zorunludur",
+    );
   }
 
   return issues;
@@ -213,7 +227,10 @@ export const validateSale3DResponseRequest = (
 ): string[] => {
   const issues: string[] = [];
 
-  if (!request.responseArray || Object.keys(request.responseArray).length === 0) {
+  if (
+    !request.responseArray ||
+    Object.keys(request.responseArray).length === 0
+  ) {
     issues.push("responseArray alanı zorunludur");
   }
 
@@ -224,7 +241,9 @@ export const validateSale3DResponseRequest = (
   return issues;
 };
 
-export const validateSaleQueryRequest = (request: SaleQueryRequest): string[] => {
+export const validateSaleQueryRequest = (
+  request: SaleQueryRequest,
+): string[] => {
   if (!isNonEmptyString(request.order_number)) {
     return ["order_number alanı zorunludur"];
   }

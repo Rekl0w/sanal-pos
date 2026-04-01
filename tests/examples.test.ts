@@ -1,7 +1,11 @@
 import { describe, expect, test } from "vitest";
 
 import { SanalPosClient } from "../src/client/sanalpos-client";
-import { ResponseStatus, SaleQueryResponseStatus, SaleResponseStatus } from "../src/domain/enums";
+import {
+  ResponseStatus,
+  SaleQueryResponseStatus,
+  SaleResponseStatus,
+} from "../src/domain/enums";
 import { sampleAuth, sampleSaleRequest } from "./fixtures";
 
 describe("örnek akışlar", () => {
@@ -49,7 +53,9 @@ describe("örnek akışlar", () => {
     );
 
     expect(allInstallments.confirm).toBe(true);
-    expect(allInstallments.installments[0]?.installment_list.length).toBeGreaterThan(0);
+    expect(
+      allInstallments.installments[0]?.installment_list.length,
+    ).toBeGreaterThan(0);
     expect(additional.confirm).toBe(true);
     expect(additional.campaigns.length).toBeGreaterThan(0);
   });

@@ -96,15 +96,17 @@ export class BinService {
     amount: number,
     bankCodes: string[],
   ): InstallmentOption[] {
-    const uniqueBankCode = bankCodes.find((code) => bankMap.has(code)) ?? BankCodes.QNBPAY;
+    const uniqueBankCode =
+      bankCodes.find((code) => bankMap.has(code)) ?? BankCodes.QNBPAY;
     const bank = bankMap.get(uniqueBankCode);
     const isCollective = bank?.collective_vpos ?? true;
 
     return [1, 2, 3, 6, 9, 12].map((installment) => {
       const rate = resolveRate(installment, isCollective);
-      const total_amount = installment === 1
-        ? roundAmount(amount)
-        : roundAmount(amount * (1 + rate / 100));
+      const total_amount =
+        installment === 1
+          ? roundAmount(amount)
+          : roundAmount(amount * (1 + rate / 100));
 
       return {
         installment,
@@ -114,7 +116,9 @@ export class BinService {
     });
   }
 
-  static query(request: BINInstallmentQueryRequest): BINInstallmentQueryResponse {
+  static query(
+    request: BINInstallmentQueryRequest,
+  ): BINInstallmentQueryResponse {
     const normalizedBin = (request.BIN ?? "").slice(0, 8);
     const record = this.find(normalizedBin);
     const amount = request.amount ?? 100;
@@ -139,7 +143,10 @@ export class BinService {
       card_type: record.card_type,
       commercial_card: record.commercial_card,
       banks_with_installments: record.banks_with_installments,
-      installment_list: this.resolveInstallments(amount, record.banks_with_installments),
+      installment_list: this.resolveInstallments(
+        amount,
+        record.banks_with_installments,
+      ),
       private_response: {
         normalized_bin: normalizedBin,
       },

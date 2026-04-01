@@ -13,7 +13,12 @@ export class HttpRequestError extends Error {
   readonly statusCode: number;
   readonly responseBody?: string;
 
-  constructor(message: string, url: string, statusCode: number, responseBody?: string) {
+  constructor(
+    message: string,
+    url: string,
+    statusCode: number,
+    responseBody?: string,
+  ) {
     super(message);
     this.name = "HttpRequestError";
     this.url = url;

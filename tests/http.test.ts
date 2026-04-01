@@ -22,7 +22,11 @@ describe("HTTP API", () => {
 
     expect(response.status).toBe(200);
     expect(json.count).toBeGreaterThan(5);
-    expect(json.data.every((bank: { collective_vpos: boolean }) => bank.collective_vpos)).toBe(true);
+    expect(
+      json.data.every(
+        (bank: { collective_vpos: boolean }) => bank.collective_vpos,
+      ),
+    ).toBe(true);
   });
 
   test("satış endpoint'i başarılı sonuç döner", async () => {

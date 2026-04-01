@@ -55,55 +55,55 @@ npm install
 
 ## Kullanılabilir sanal POS'lar
 
-| Sanal POS | Satış | Satış 3D | İptal | İade | Durum |
-| --------- | :---: | :------: | :---: | :---: | ----- |
-| Akbank | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Akbank Nestpay | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Albaraka Türk | ✔️ | ✔️ | ✔️ | ✔️ | Fallback / katalog |
-| Alternatif Bank | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Anadolubank | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Denizbank | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Fibabanka | ✔️ | ✔️ | ✔️ | ✔️ | Fallback / katalog |
-| QNB Finansbank | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Finansbank Nestpay | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Garanti BBVA | ✔️ | ✔️ | ❌ | ❌ | Gerçek gateway |
-| Halkbank | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| HSBC | ✔️ | ✔️ | ✔️ | ✔️ | Fallback / katalog |
-| ING Bank | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| İş Bankası | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Odeabank | ✔️ | ✔️ | ✔️ | ✔️ | Fallback / katalog |
-| Türk Ekonomi Bankası | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Türkiye Finans | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Vakıfbank | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Yapı Kredi Bankası | ✔️ | ✔️ | ❌ | ❌ | Gerçek gateway |
-| Şekerbank | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Ziraat Bankası | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Aktif Yatırım Bankası | ✔️ | ✔️ | ✔️ | ✔️ | Fallback / katalog |
-| Kuveyt Türk | ✔️ | ✔️ | ❌ | ❌ | Gerçek gateway |
-| Vakıf Katılım | ✔️ | ✔️ | ❌ | ❌ | Gerçek gateway |
-| Ziraat Katılım | ✔️ | ✔️ | ✔️ | ✔️ | Fallback / katalog |
-| PayNKolay | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| HalkÖde | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Tami | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| VakıfPayS | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| ZiraatPay | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Vepara | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Moka | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Ahlpay | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| IQmoney | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Parolapara | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| PayBull | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| ParamPos | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| QNBpay | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Sipay | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Hepsipay | ✔️ | ✔️ | ✔️ | ✔️ | Fallback / katalog |
-| Payten (MSU) | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| PayTR | ✔️ | ✔️ | ✔️ | ✔️ | Fallback / katalog |
-| IPara | ✔️ | ✔️ | ✔️ | ✔️ | Fallback / katalog |
-| PayU | ✔️ | ✔️ | ✔️ | ✔️ | Fallback / katalog |
-| Iyzico | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Cardplus | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
-| Paratika | ✔️ | ✔️ | ✔️ | ✔️ | Gerçek gateway |
+| Sanal POS             | Satış | Satış 3D | İptal | İade | Durum              |
+| --------------------- | :---: | :------: | :---: | :--: | ------------------ |
+| Akbank                |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Akbank Nestpay        |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Albaraka Türk         |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Fallback / katalog |
+| Alternatif Bank       |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Anadolubank           |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Denizbank             |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Fibabanka             |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Fallback / katalog |
+| QNB Finansbank        |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Finansbank Nestpay    |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Garanti BBVA          |  ✔️   |    ✔️    |  ❌   |  ❌  | Gerçek gateway     |
+| Halkbank              |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| HSBC                  |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Fallback / katalog |
+| ING Bank              |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| İş Bankası            |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Odeabank              |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Fallback / katalog |
+| Türk Ekonomi Bankası  |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Türkiye Finans        |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Vakıfbank             |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Yapı Kredi Bankası    |  ✔️   |    ✔️    |  ❌   |  ❌  | Gerçek gateway     |
+| Şekerbank             |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Ziraat Bankası        |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Aktif Yatırım Bankası |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Fallback / katalog |
+| Kuveyt Türk           |  ✔️   |    ✔️    |  ❌   |  ❌  | Gerçek gateway     |
+| Vakıf Katılım         |  ✔️   |    ✔️    |  ❌   |  ❌  | Gerçek gateway     |
+| Ziraat Katılım        |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Fallback / katalog |
+| PayNKolay             |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| HalkÖde               |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Tami                  |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| VakıfPayS             |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| ZiraatPay             |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Vepara                |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Moka                  |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Ahlpay                |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| IQmoney               |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Parolapara            |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| PayBull               |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| ParamPos              |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| QNBpay                |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Sipay                 |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Hepsipay              |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Fallback / katalog |
+| Payten (MSU)          |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| PayTR                 |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Fallback / katalog |
+| IPara                 |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Fallback / katalog |
+| PayU                  |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Fallback / katalog |
+| Iyzico                |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Cardplus              |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
+| Paratika              |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
 
 > `Fallback / katalog` etiketi, bu repodaki katalog kaydının `documented: false` olmasına ve `BankService.createGateway()` çağrısında gerçek gateway yerine `SandboxGateway` çözülmesine dayanır. Yani bu kayıtlar katalogda vardır; ancak bu pakette şu an gerçek binding yerine kontrollü fallback davranışı ile çalışır.
 
@@ -166,32 +166,32 @@ npm audit
 
 ## API bilgileri - `MerchantAuth`
 
-| Alan | Tür | Açıklama |
-| ---- | --- | -------- |
-| `bank_code` | `string` | Banka / ödeme kuruluşu kodu. `BankCodes` veya `BankService` sabitleri kullanılabilir. |
-| `merchant_id` | `string` | Firma kodu / üye işyeri numarası / client code |
-| `merchant_user` | `string` | API kullanıcı adı / terminal no / app id |
-| `merchant_password` | `string` | API şifresi / terminal safe id / secret |
-| `merchant_storekey` | `string` | 3D store key / merchant key / guid / secret key |
-| `test_platform` | `boolean` | `true` test ortamı, `false` canlı ortam |
+| Alan                | Tür       | Açıklama                                                                              |
+| ------------------- | --------- | ------------------------------------------------------------------------------------- |
+| `bank_code`         | `string`  | Banka / ödeme kuruluşu kodu. `BankCodes` veya `BankService` sabitleri kullanılabilir. |
+| `merchant_id`       | `string`  | Firma kodu / üye işyeri numarası / client code                                        |
+| `merchant_user`     | `string`  | API kullanıcı adı / terminal no / app id                                              |
+| `merchant_password` | `string`  | API şifresi / terminal safe id / secret                                               |
+| `merchant_storekey` | `string`  | 3D store key / merchant key / guid / secret key                                       |
+| `test_platform`     | `boolean` | `true` test ortamı, `false` canlı ortam                                               |
 
 ## Banka bazlı credential alan eşlemesi
 
-| Sanal POS | `bank_code` | `merchant_id` | `merchant_user` | `merchant_password` | `merchant_storekey` |
-| --------- | ----------- | ------------- | --------------- | ------------------ | ------------------- |
-| Akbank | `BankCodes.AKBANK` | İş Yeri No | `merchantSafeId` | `terminalSafeId` | Secret Key |
-| Nestpay ailesi | İlgili Nestpay kodu | Mağaza Kodu | API Kullanıcısı | API Şifresi | 3D Storekey |
-| Garanti BBVA | `BankCodes.GARANTI_BBVA` | Firma Kodu | Terminal No | PROVAUT Şifresi | 3D Anahtarı |
-| Vakıfbank | `BankCodes.VAKIFBANK` | Üye İşyeri No | POS No | API Şifresi | — |
-| Yapı Kredi | `BankCodes.YAPI_KREDI` | Firma Kodu | Terminal No | PosNet ID | ENCKEY |
-| CCPayment ailesi | İlgili CCPayment kodu | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Merchant Key |
-| ParamPos | `BankCodes.PARAMPOS` | Client Code | Kullanıcı Adı | Şifre | Guid Anahtar |
-| Moka | `BankCodes.MOKA` | Bayi Kodu | API Kullanıcısı | API Şifresi | — |
-| Ahlpay | `BankCodes.AHLPAY` | Member ID | API Kullanıcısı | API Şifresi | API Key |
-| Payten ailesi | İlgili Payten kodu | Firma Kodu | API Kullanıcısı | API Şifresi | Dealer Type / ek anahtar |
-| Tami | `BankCodes.TAMI` | Üye İşyeri No | Terminal No | `KidValue / KValue` (pipe-separated) | Secret Key |
-| PayNKolay | `BankCodes.PAYNKOLAY` | `sx` token / merchant id | `sx` list | `sx` iptal | Secret Key |
-| Iyzico | `BankCodes.IYZICO` | Üye İşyeri No | API Anahtarı | Güvenlik Anahtarı | — |
+| Sanal POS        | `bank_code`              | `merchant_id`            | `merchant_user`   | `merchant_password`                  | `merchant_storekey`      |
+| ---------------- | ------------------------ | ------------------------ | ----------------- | ------------------------------------ | ------------------------ |
+| Akbank           | `BankCodes.AKBANK`       | İş Yeri No               | `merchantSafeId`  | `terminalSafeId`                     | Secret Key               |
+| Nestpay ailesi   | İlgili Nestpay kodu      | Mağaza Kodu              | API Kullanıcısı   | API Şifresi                          | 3D Storekey              |
+| Garanti BBVA     | `BankCodes.GARANTI_BBVA` | Firma Kodu               | Terminal No       | PROVAUT Şifresi                      | 3D Anahtarı              |
+| Vakıfbank        | `BankCodes.VAKIFBANK`    | Üye İşyeri No            | POS No            | API Şifresi                          | —                        |
+| Yapı Kredi       | `BankCodes.YAPI_KREDI`   | Firma Kodu               | Terminal No       | PosNet ID                            | ENCKEY                   |
+| CCPayment ailesi | İlgili CCPayment kodu    | Üye İşyeri ID            | Uygulama Anahtarı | Uygulama Parolası                    | Merchant Key             |
+| ParamPos         | `BankCodes.PARAMPOS`     | Client Code              | Kullanıcı Adı     | Şifre                                | Guid Anahtar             |
+| Moka             | `BankCodes.MOKA`         | Bayi Kodu                | API Kullanıcısı   | API Şifresi                          | —                        |
+| Ahlpay           | `BankCodes.AHLPAY`       | Member ID                | API Kullanıcısı   | API Şifresi                          | API Key                  |
+| Payten ailesi    | İlgili Payten kodu       | Firma Kodu               | API Kullanıcısı   | API Şifresi                          | Dealer Type / ek anahtar |
+| Tami             | `BankCodes.TAMI`         | Üye İşyeri No            | Terminal No       | `KidValue / KValue` (pipe-separated) | Secret Key               |
+| PayNKolay        | `BankCodes.PAYNKOLAY`    | `sx` token / merchant id | `sx` list         | `sx` iptal                           | Secret Key               |
+| Iyzico           | `BankCodes.IYZICO`       | Üye İşyeri No            | API Anahtarı      | Güvenlik Anahtarı                    | —                        |
 
 ## HTTP API
 
@@ -310,7 +310,8 @@ const response = await SanalPosClient.sale(
     merchant_id: "20158",
     merchant_user: "07fb70f9d8de575f32baa6518e38c5d6",
     merchant_password: "61d97b2cac247069495be4b16f8604db",
-    merchant_storekey: "$2y$10$N9IJkgazXMUwCzpn7NJrZePy3v.dIFOQUyW4yGfT3eWry6m.KxanK",
+    merchant_storekey:
+      "$2y$10$N9IJkgazXMUwCzpn7NJrZePy3v.dIFOQUyW4yGfT3eWry6m.KxanK",
     test_platform: true,
   },
 );
@@ -374,7 +375,11 @@ src/
 Gerçek HTTP isteklerinde bağlantı, timeout veya upstream hata durumları `HttpRequestError` olarak yükseltilir. İş kuralı / input problemleri ise `ValidationError` üzerinden döner.
 
 ```ts
-import { HttpRequestError, SanalPosClient, ValidationError } from "@rekl0w/sanal-pos";
+import {
+  HttpRequestError,
+  SanalPosClient,
+  ValidationError,
+} from "@rekl0w/sanal-pos";
 
 try {
   const response = await SanalPosClient.sale(request, auth);

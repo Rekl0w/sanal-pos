@@ -7,7 +7,10 @@ import { sampleAuth, sampleSaleRequest } from "./fixtures";
 
 describe("SanalPosClient", () => {
   test("3D'siz satış başarılı döner", async () => {
-    const response = await SanalPosClient.sale(sampleSaleRequest(), sampleAuth());
+    const response = await SanalPosClient.sale(
+      sampleSaleRequest(),
+      sampleAuth(),
+    );
 
     expect(response.status).toBe(SaleResponseStatus.Success);
     expect(response.transaction_id).toBeDefined();
@@ -25,7 +28,9 @@ describe("SanalPosClient", () => {
     );
 
     expect(response.status).toBe(SaleResponseStatus.RedirectURL);
-    expect(response.message).toContain("https://example.com/payment/3d-response");
+    expect(response.message).toContain(
+      "https://example.com/payment/3d-response",
+    );
   });
 
   test("3D callback başarıya çevrilir", async () => {

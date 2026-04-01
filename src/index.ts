@@ -12,7 +12,11 @@ export {
   currencyNameFromCode,
 } from "./domain/enums";
 export type * from "./domain/types";
-export { HttpRequestError, ValidationError, UnsupportedGatewayError } from "./errors";
+export {
+  HttpRequestError,
+  ValidationError,
+  UnsupportedGatewayError,
+} from "./errors";
 export { BankService } from "./services/bank-service";
 export { BinService } from "./services/bin-service";
 export {

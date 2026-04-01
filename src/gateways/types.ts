@@ -19,7 +19,10 @@ import type {
 
 export interface VirtualPosGateway {
   sale(request: SaleRequest, auth: MerchantAuth): Promise<SaleResponse>;
-  sale3DResponse(request: Sale3DResponseRequest, auth: MerchantAuth): Promise<SaleResponse>;
+  sale3DResponse(
+    request: Sale3DResponseRequest,
+    auth: MerchantAuth,
+  ): Promise<SaleResponse>;
   binInstallmentQuery(
     request: BINInstallmentQueryRequest,
     auth: MerchantAuth,
@@ -34,5 +37,8 @@ export interface VirtualPosGateway {
   ): Promise<AdditionalInstallmentQueryResponse>;
   cancel(request: CancelRequest, auth: MerchantAuth): Promise<CancelResponse>;
   refund(request: RefundRequest, auth: MerchantAuth): Promise<RefundResponse>;
-  saleQuery(request: SaleQueryRequest, auth: MerchantAuth): Promise<SaleQueryResponse>;
+  saleQuery(
+    request: SaleQueryRequest,
+    auth: MerchantAuth,
+  ): Promise<SaleQueryResponse>;
 }

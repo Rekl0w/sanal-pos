@@ -104,11 +104,17 @@ app.get("/api/banks", (c) => {
       return false;
     }
 
-    if (installmentApi !== undefined && bank.installment_api !== installmentApi) {
+    if (
+      installmentApi !== undefined &&
+      bank.installment_api !== installmentApi
+    ) {
       return false;
     }
 
-    if (supportsRefund !== undefined && bank.supports_refund !== supportsRefund) {
+    if (
+      supportsRefund !== undefined &&
+      bank.supports_refund !== supportsRefund
+    ) {
       return false;
     }
 
@@ -138,42 +144,75 @@ app.get("/api/banks/:bankCode", (c) => {
   return c.json({ ok: true, data: bank });
 });
 
-app.post("/api/sale", zValidator("json", SaleRequestEnvelopeSchema), async (c) => {
-  const body = c.req.valid("json");
-  return c.json({ ok: true, data: await SanalPosClient.sale(body.request, body.auth) });
-});
+app.post(
+  "/api/sale",
+  zValidator("json", SaleRequestEnvelopeSchema),
+  async (c) => {
+    const body = c.req.valid("json");
+    return c.json({
+      ok: true,
+      data: await SanalPosClient.sale(body.request, body.auth),
+    });
+  },
+);
 
-app.post("/api/sale/3d-response", zValidator("json", Sale3DEnvelopeSchema), async (c) => {
-  const body = c.req.valid("json");
-  return c.json({ ok: true, data: await SanalPosClient.sale3DResponse(body.request, body.auth) });
-});
+app.post(
+  "/api/sale/3d-response",
+  zValidator("json", Sale3DEnvelopeSchema),
+  async (c) => {
+    const body = c.req.valid("json");
+    return c.json({
+      ok: true,
+      data: await SanalPosClient.sale3DResponse(body.request, body.auth),
+    });
+  },
+);
 
 app.post("/api/cancel", zValidator("json", CancelEnvelopeSchema), async (c) => {
   const body = c.req.valid("json");
-  return c.json({ ok: true, data: await SanalPosClient.cancel(body.request, body.auth) });
+  return c.json({
+    ok: true,
+    data: await SanalPosClient.cancel(body.request, body.auth),
+  });
 });
 
 app.post("/api/refund", zValidator("json", RefundEnvelopeSchema), async (c) => {
   const body = c.req.valid("json");
-  return c.json({ ok: true, data: await SanalPosClient.refund(body.request, body.auth) });
+  return c.json({
+    ok: true,
+    data: await SanalPosClient.refund(body.request, body.auth),
+  });
 });
 
 app.post("/api/query/bin", zValidator("json", BinEnvelopeSchema), async (c) => {
   const body = c.req.valid("json");
-  return c.json({ ok: true, data: await SanalPosClient.binInstallmentQuery(body.request, body.auth) });
+  return c.json({
+    ok: true,
+    data: await SanalPosClient.binInstallmentQuery(body.request, body.auth),
+  });
 });
 
-app.post("/api/query/sale", zValidator("json", SaleQueryEnvelopeSchema), async (c) => {
-  const body = c.req.valid("json");
-  return c.json({ ok: true, data: await SanalPosClient.saleQuery(body.request, body.auth) });
-});
+app.post(
+  "/api/query/sale",
+  zValidator("json", SaleQueryEnvelopeSchema),
+  async (c) => {
+    const body = c.req.valid("json");
+    return c.json({
+      ok: true,
+      data: await SanalPosClient.saleQuery(body.request, body.auth),
+    });
+  },
+);
 
 app.post(
   "/api/query/installments/all",
   zValidator("json", AllInstallmentEnvelopeSchema),
   async (c) => {
     const body = c.req.valid("json");
-    return c.json({ ok: true, data: await SanalPosClient.allInstallmentQuery(body.request, body.auth) });
+    return c.json({
+      ok: true,
+      data: await SanalPosClient.allInstallmentQuery(body.request, body.auth),
+    });
   },
 );
 
@@ -182,6 +221,12 @@ app.post(
   zValidator("json", AdditionalInstallmentEnvelopeSchema),
   async (c) => {
     const body = c.req.valid("json");
-    return c.json({ ok: true, data: await SanalPosClient.additionalInstallmentQuery(body.request, body.auth) });
+    return c.json({
+      ok: true,
+      data: await SanalPosClient.additionalInstallmentQuery(
+        body.request,
+        body.auth,
+      ),
+    });
   },
 );

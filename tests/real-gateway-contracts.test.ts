@@ -7,11 +7,17 @@ import { sampleAuth, sampleSaleRequest } from "./fixtures";
 
 const originalFetch = globalThis.fetch;
 
-const createResponse = (body: string, status = 200, headers?: ResponseInit["headers"]) =>
-  new Response(body, { status, headers });
+const createResponse = (
+  body: string,
+  status = 200,
+  headers?: ResponseInit["headers"],
+) => new Response(body, { status, headers });
 
 beforeEach(() => {
-  globalThis.fetch = (async (input: Parameters<typeof fetch>[0], init?: Parameters<typeof fetch>[1]) => {
+  globalThis.fetch = (async (
+    input: Parameters<typeof fetch>[0],
+    init?: Parameters<typeof fetch>[1],
+  ) => {
     const url = String(input);
 
     if (url.includes("/api/token")) {
@@ -21,19 +27,26 @@ beforeEach(() => {
     }
 
     if (url.includes("/api/paySmart2D")) {
-      const body = JSON.parse(String(init?.body ?? "{}")) as Record<string, unknown>;
+      const body = JSON.parse(String(init?.body ?? "{}")) as Record<
+        string,
+        unknown
+      >;
       expect(Array.isArray(body.items)).toBe(true);
       expect(body.invoice_id).toBe("ORDER-001");
 
-      return createResponse(JSON.stringify({
-        status_code: "100",
-        data: {
-          payment_status: "1",
-          auth_code: "QNB-AUTH-001",
+      return createResponse(
+        JSON.stringify({
+          status_code: "100",
+          data: {
+            payment_status: "1",
+            auth_code: "QNB-AUTH-001",
+          },
+        }),
+        200,
+        {
+          "content-type": "application/json",
         },
-      }), 200, {
-        "content-type": "application/json",
-      });
+      );
     }
 
     if (url.includes("/api/refund")) {
@@ -42,11 +55,14 @@ beforeEach(() => {
       });
     }
 
-    if (url.includes("sanalpos.isbank.com.tr") || url.includes("istest.asseco-see.com.tr")) {
+    if (
+      url.includes("sanalpos.isbank.com.tr") ||
+      url.includes("istest.asseco-see.com.tr")
+    ) {
       const body = String(init?.body ?? "");
       expect(body).toContain("DATA=");
       return createResponse(
-        "<?xml version=\"1.0\" encoding=\"ISO-8859-9\"?><CC5Response><Response>Approved</Response><TransId>NESTPAY-123</TransId></CC5Response>",
+        '<?xml version="1.0" encoding="ISO-8859-9"?><CC5Response><Response>Approved</Response><TransId>NESTPAY-123</TransId></CC5Response>',
         200,
         { "content-type": "application/xml" },
       );
@@ -54,7 +70,7 @@ beforeEach(() => {
 
     if (url.includes("garantibbva.com.tr/VPServlet")) {
       return createResponse(
-        "<?xml version=\"1.0\" encoding=\"utf-8\"?><GVPSResponse><Transaction><Response><Code>00</Code></Response><RetrefNum>GAR-001</RetrefNum></Transaction></GVPSResponse>",
+        '<?xml version="1.0" encoding="utf-8"?><GVPSResponse><Transaction><Response><Code>00</Code></Response><RetrefNum>GAR-001</RetrefNum></Transaction></GVPSResponse>',
         200,
         { "content-type": "application/xml" },
       );
@@ -70,7 +86,10 @@ afterEach(() => {
 
 describe("real gateway contracts", () => {
   test("QNBPay 2D satış gerçek gateway akışından başarı döner", async () => {
-    const response = await SanalPosClient.sale(sampleSaleRequest(), sampleAuth(BankCodes.QNBPAY));
+    const response = await SanalPosClient.sale(
+      sampleSaleRequest(),
+      sampleAuth(BankCodes.QNBPAY),
+    );
 
     expect(response.status).toBe(SaleResponseStatus.Success);
     expect(response.transaction_id).toBe("QNB-AUTH-001");

@@ -58,7 +58,12 @@ const envAuth = (prefix: string): MerchantAuth => ({
 });
 
 const hasAuth = (auth: MerchantAuth): boolean =>
-  Boolean(auth.bank_code && auth.merchant_id && auth.merchant_user && auth.merchant_password);
+  Boolean(
+    auth.bank_code &&
+    auth.merchant_id &&
+    auth.merchant_user &&
+    auth.merchant_password,
+  );
 
 const describeIf = liveEnabled ? describe : describe.skip;
 
@@ -70,9 +75,14 @@ describeIf("live integration smoke", () => {
         return;
       }
 
-      const response = await SanalPosClient.sale(sampleSaleRequest({ order_number: `${prefix}-LIVE-${Date.now()}` }), auth);
+      const response = await SanalPosClient.sale(
+        sampleSaleRequest({ order_number: `${prefix}-LIVE-${Date.now()}` }),
+        auth,
+      );
 
-      expect(["success", "redirect_url", "redirect_html", "error"]).toContain(response.status);
+      expect(["success", "redirect_url", "redirect_html", "error"]).toContain(
+        response.status,
+      );
       expect(response.message).toBeDefined();
     });
   }

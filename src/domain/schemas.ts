@@ -5,31 +5,41 @@ import { CountryMap, CurrencyMap, GatewayFamilies } from "./enums";
 const currencyValueSet = new Set<number>(Object.values(CurrencyMap));
 const countryValueSet = new Set<string>(Object.values(CountryMap));
 
-export const CurrencySchema = z.preprocess((value) => {
-  if (typeof value === "string") {
-    const normalized = value.trim().toUpperCase();
+export const CurrencySchema = z.preprocess(
+  (value) => {
+    if (typeof value === "string") {
+      const normalized = value.trim().toUpperCase();
 
-    if (normalized in CurrencyMap) {
-      return CurrencyMap[normalized as keyof typeof CurrencyMap];
+      if (normalized in CurrencyMap) {
+        return CurrencyMap[normalized as keyof typeof CurrencyMap];
+      }
+
+      const asNumber = Number(normalized);
+
+      if (Number.isFinite(asNumber)) {
+        return asNumber;
+      }
     }
 
-    const asNumber = Number(normalized);
+    return value;
+  },
+  z
+    .number()
+    .refine((value) => currencyValueSet.has(value), "Geçersiz para birimi"),
+);
 
-    if (Number.isFinite(asNumber)) {
-      return asNumber;
+export const CountrySchema = z.preprocess(
+  (value) => {
+    if (typeof value === "string") {
+      return value.trim().toUpperCase();
     }
-  }
 
-  return value;
-}, z.number().refine((value) => currencyValueSet.has(value), "Geçersiz para birimi"));
-
-export const CountrySchema = z.preprocess((value) => {
-  if (typeof value === "string") {
-    return value.trim().toUpperCase();
-  }
-
-  return value;
-}, z.string().refine((value) => countryValueSet.has(value), "Geçersiz ülke kodu"));
+    return value;
+  },
+  z
+    .string()
+    .refine((value) => countryValueSet.has(value), "Geçersiz ülke kodu"),
+);
 
 export const MerchantAuthSchema = z.object({
   bank_code: z.string().trim().min(1),

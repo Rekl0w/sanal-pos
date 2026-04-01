@@ -7,14 +7,6 @@
     "declarationMap": false,
     "outDir": "./dist"
   },
-  "include": [
-    "index.ts",
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "tests",
-    "dist",
-    "node_modules",
-    "server.ts"
-  ]
+  "include": ["index.ts", "src/**/*.ts"],
+  "exclude": ["tests", "dist", "node_modules", "server.ts"]
 }

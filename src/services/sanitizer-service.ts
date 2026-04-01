@@ -1,6 +1,9 @@
 import type { CustomerInfo, SaleInfo } from "../domain/types";
 
-const trimTo = (value: string | undefined, length: number): string | undefined => {
+const trimTo = (
+  value: string | undefined,
+  length: number,
+): string | undefined => {
   if (!value) {
     return undefined;
   }
@@ -20,7 +23,9 @@ export const clearString = (value: string | undefined): string | undefined => {
     .trim();
 };
 
-export const sanitizeCustomerInfo = (info: CustomerInfo | undefined): CustomerInfo | undefined => {
+export const sanitizeCustomerInfo = (
+  info: CustomerInfo | undefined,
+): CustomerInfo | undefined => {
   if (!info) {
     return undefined;
   }
@@ -40,7 +45,9 @@ export const sanitizeCustomerInfo = (info: CustomerInfo | undefined): CustomerIn
   };
 };
 
-export const sanitizeSaleInfo = (info: SaleInfo | undefined): SaleInfo | undefined => {
+export const sanitizeSaleInfo = (
+  info: SaleInfo | undefined,
+): SaleInfo | undefined => {
   if (!info) {
     return undefined;
   }

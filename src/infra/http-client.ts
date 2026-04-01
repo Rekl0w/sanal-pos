@@ -6,9 +6,12 @@ export interface HttpHeaders {
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 
-const buildSignal = (timeoutMs: number): AbortSignal => AbortSignal.timeout(timeoutMs);
+const buildSignal = (timeoutMs: number): AbortSignal =>
+  AbortSignal.timeout(timeoutMs);
 
-const normalizeBody = (body: string | URLSearchParams): NonNullable<RequestInit["body"]> => body;
+const normalizeBody = (
+  body: string | URLSearchParams,
+): NonNullable<RequestInit["body"]> => body;
 
 export class HttpClient {
   static async postForm(
@@ -67,7 +70,10 @@ export class HttpClient {
     });
   }
 
-  private static async request(url: string, init: RequestInit): Promise<string> {
+  private static async request(
+    url: string,
+    init: RequestInit,
+  ): Promise<string> {
     try {
       const response = await fetch(url, init);
       const text = await response.text();
@@ -87,7 +93,8 @@ export class HttpClient {
         throw error;
       }
 
-      const message = error instanceof Error ? error.message : "HTTP isteği başarısız oldu";
+      const message =
+        error instanceof Error ? error.message : "HTTP isteği başarısız oldu";
       throw new HttpRequestError(message, url, 0);
     }
   }

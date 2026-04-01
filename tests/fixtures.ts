@@ -14,7 +14,8 @@ export const sampleAuth = (
   merchant_id: "20158",
   merchant_user: "07fb70f9d8de575f32baa6518e38c5d6",
   merchant_password: "61d97b2cac247069495be4b16f8604db",
-  merchant_storekey: "$2y$10$N9IJkgazXMUwCzpn7NJrZePy3v.dIFOQUyW4yGfT3eWry6m.KxanK",
+  merchant_storekey:
+    "$2y$10$N9IJkgazXMUwCzpn7NJrZePy3v.dIFOQUyW4yGfT3eWry6m.KxanK",
   test_platform: true,
   ...overrides,
 });

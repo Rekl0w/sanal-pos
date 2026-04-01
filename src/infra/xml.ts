@@ -30,20 +30,27 @@ export const parseXml = (xml: string): Record<string, unknown> => {
 
   try {
     const parsed = parser.parse(xml);
-    return typeof parsed === "object" && parsed !== null ? (parsed as Record<string, unknown>) : {};
+    return typeof parsed === "object" && parsed !== null
+      ? (parsed as Record<string, unknown>)
+      : {};
   } catch {
     return {};
   }
 };
 
-export const findNode = (input: unknown, key: string): Record<string, unknown> | undefined => {
+export const findNode = (
+  input: unknown,
+  key: string,
+): Record<string, unknown> | undefined => {
   if (!input || typeof input !== "object") {
     return undefined;
   }
 
   if (key in (input as Record<string, unknown>)) {
     const value = (input as Record<string, unknown>)[key];
-    return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : undefined;
+    return typeof value === "object" && value !== null
+      ? (value as Record<string, unknown>)
+      : undefined;
   }
 
   for (const value of Object.values(input as Record<string, unknown>)) {

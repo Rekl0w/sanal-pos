@@ -22,7 +22,9 @@ describe("validation", () => {
     });
 
     expect(issues).toContain("Kart üzerindeki isim boş olamaz.");
-    expect(issues).toContain("Kart numarası 15-19 karakter arasında olmalıdır.");
+    expect(issues).toContain(
+      "Kart numarası 15-19 karakter arasında olmalıdır.",
+    );
     expect(issues).toContain("Son kullanma ayı 1-12 arasında olmalıdır.");
     expect(issues).toContain("Son kullanma yılı geçersiz.");
     expect(issues).toContain("CVV 3-4 karakter olmalıdır.");
@@ -66,6 +68,8 @@ describe("validation", () => {
       sampleAuth(BankCodes.YAPI_KREDI),
     );
 
-    expect(issues).toContain("currency alanı Yapı Kredi bankası için zorunludur");
+    expect(issues).toContain(
+      "currency alanı Yapı Kredi bankası için zorunludur",
+    );
   });
 });
