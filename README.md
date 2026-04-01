@@ -1,6 +1,6 @@
 # @rekl0w/sanal-pos
 
-`evrenonur/sanalpos` yaklaşımını Node.js, Bun ve TypeScript dünyasına taşıyan, testli ve npm paketlemeye hazır bir sanal POS orkestrasyon katmanı.
+[`evrenonur/sanalpos`](https://github.com/evrenonur/sanalpos) yaklaşımını Node.js, Bun ve TypeScript dünyasına taşıyan, testli ve npm paketlemeye hazır bir sanal POS orkestrasyon katmanı.
 
 Bu repo iki şekilde kullanılabilir:
 
@@ -404,5 +404,5 @@ try {
 
 ## Referans
 
-- Bu proje, `evrenonur/sanalpos` repo akışlarını TypeScript/Bun tarafına taşır.
-- Referans PHP paketinin kendisi de `cempehlivan/CP.VPOS` mimarisi üzerine kuruludur.
+- Bu proje, [`evrenonur/sanalpos`](https://github.com/evrenonur/sanalpos) repo akışlarını TypeScript/Bun tarafına taşır.
+- Referans PHP paketinin kendisi de [`cempehlivan/CP.VPOS`](https://github.com/cempehlivan/CP.VPOS) mimarisi üzerine kuruludur.
