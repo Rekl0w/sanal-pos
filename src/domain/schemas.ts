@@ -1,12 +1,67 @@
 import { z } from "zod";
 
-import { CountryMap, CurrencyMap, GatewayFamilies } from "./enums";
+import {
+  CountryMap,
+  CurrencyMap,
+  GatewayFamilies,
+  InstallmentCommissionPolicy,
+} from "./enums";
 
 const currencyValueSet = new Set<number>(Object.values(CurrencyMap));
 const countryValueSet = new Set<string>(Object.values(CountryMap));
+const normalizeInstallmentCommissionPolicy = (value: unknown): unknown => {
+  if (value === undefined || value === null || value === "") {
+    return InstallmentCommissionPolicy.Default;
+  }
+
+  if (typeof value === "number") {
+    switch (value) {
+      case 1:
+        return InstallmentCommissionPolicy.ChargeToCustomer;
+      case 2:
+        return InstallmentCommissionPolicy.AbsorbByMerchant;
+      case 0:
+      default:
+        return InstallmentCommissionPolicy.Default;
+    }
+  }
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+
+    switch (normalized) {
+      case "0":
+      case "default":
+        return InstallmentCommissionPolicy.Default;
+      case "1":
+      case "chargetocustomer":
+      case "charge_to_customer":
+      case "customer":
+        return InstallmentCommissionPolicy.ChargeToCustomer;
+      case "2":
+      case "absorbbymerchant":
+      case "absorb_by_merchant":
+      case "merchant":
+        return InstallmentCommissionPolicy.AbsorbByMerchant;
+      default:
+        return normalized;
+    }
+  }
+
+  return value;
+};
+
+export const InstallmentCommissionPolicySchema = z.preprocess(
+  normalizeInstallmentCommissionPolicy,
+  z.union([
+    z.literal(InstallmentCommissionPolicy.Default),
+    z.literal(InstallmentCommissionPolicy.ChargeToCustomer),
+    z.literal(InstallmentCommissionPolicy.AbsorbByMerchant),
+  ]),
+);
 
 export const CurrencySchema = z.preprocess(
-  (value) => {
+  (value: unknown) => {
     if (typeof value === "string") {
       const normalized = value.trim().toUpperCase();
 
@@ -25,11 +80,14 @@ export const CurrencySchema = z.preprocess(
   },
   z
     .number()
-    .refine((value) => currencyValueSet.has(value), "Geçersiz para birimi"),
+    .refine(
+      (value: number) => currencyValueSet.has(value),
+      "Geçersiz para birimi",
+    ),
 );
 
 export const CountrySchema = z.preprocess(
-  (value) => {
+  (value: unknown) => {
     if (typeof value === "string") {
       return value.trim().toUpperCase();
     }
@@ -38,7 +96,10 @@ export const CountrySchema = z.preprocess(
   },
   z
     .string()
-    .refine((value) => countryValueSet.has(value), "Geçersiz ülke kodu"),
+    .refine(
+      (value: string) => countryValueSet.has(value),
+      "Geçersiz ülke kodu",
+    ),
 );
 
 export const MerchantAuthSchema = z.object({
@@ -48,6 +109,10 @@ export const MerchantAuthSchema = z.object({
   merchant_password: z.string().trim().optional(),
   merchant_storekey: z.string().trim().optional(),
   test_platform: z.boolean().optional().default(true),
+  installment_commission_policy:
+    InstallmentCommissionPolicySchema.optional().default(
+      InstallmentCommissionPolicy.Default,
+    ),
 });
 
 export const CustomerInfoSchema = z.object({

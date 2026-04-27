@@ -27,6 +27,6 @@ describe("catalog coverage", () => {
   test("allBankList tam katalogu döndürür", () => {
     const banks = SanalPosClient.allBankList();
 
-    expect(banks.length).toBe(47);
+    expect(banks.length).toBe(48);
   });
 });

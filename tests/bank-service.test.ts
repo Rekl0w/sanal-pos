@@ -8,7 +8,7 @@ describe("BankService", () => {
     const banks = BankService.allBanks();
 
     expect(Array.isArray(banks)).toBe(true);
-    expect(banks.length).toBe(47);
+    expect(banks.length).toBe(48);
   });
 
   test("banka kodları benzersizdir", () => {

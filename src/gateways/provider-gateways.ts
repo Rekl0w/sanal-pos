@@ -1,8 +1,14 @@
-import { createCipheriv, createDecipheriv, createHmac } from "node:crypto";
+import {
+  createCipheriv,
+  createDecipheriv,
+  createHmac,
+  randomInt,
+} from "node:crypto";
 
 import { BankCodes } from "../domain/banks";
 import {
   CurrencyMap,
+  InstallmentCommissionPolicy,
   ResponseStatus,
   SaleQueryResponseStatus,
   SaleResponseStatus,
@@ -24,7 +30,11 @@ import type {
   SaleRequest,
   SaleResponse,
 } from "../domain/types";
-import { ccpaymentConfig, paytenConfig } from "../config/gateway-config";
+import {
+  ccpaymentConfig,
+  paynetConfig,
+  paytenConfig,
+} from "../config/gateway-config";
 import { HttpClient } from "../infra/http-client";
 import {
   iyzicoFormatPrice,
@@ -42,6 +52,7 @@ import {
   guid,
   parseSemicolonResponse,
   sha1Base64,
+  sha1Hex,
   sha256Hex,
   sha512Base64,
   toKurus,
@@ -57,6 +68,7 @@ class CCPaymentGateway extends AbstractGateway {
     liveBase: string;
     skipPaymentStatusCheck?: boolean;
     cardProgramFieldName?: string;
+    completePaymentRequiresAppLang?: boolean;
   };
 
   constructor(bank: BankDefinition) {
@@ -149,6 +161,58 @@ class CCPaymentGateway extends AbstractGateway {
     return JSON.parse(raw) as Record<string, unknown>;
   }
 
+  private commissionPolicy(auth: MerchantAuth): string {
+    return (
+      auth.installment_commission_policy ?? InstallmentCommissionPolicy.Default
+    );
+  }
+
+  private commissionPolicyValue(auth: MerchantAuth): string {
+    return this.commissionPolicy(auth) ===
+      InstallmentCommissionPolicy.ChargeToCustomer
+      ? "1"
+      : "2";
+  }
+
+  private appendInstallmentCommissionPolicy(
+    body: Record<string, unknown>,
+    installment: number,
+    auth: MerchantAuth,
+  ): void {
+    if (
+      installment > 1 &&
+      this.commissionPolicy(auth) !== InstallmentCommissionPolicy.Default
+    ) {
+      body.is_comission_from_user = this.commissionPolicyValue(auth);
+    }
+  }
+
+  private completePaymentRequiresAppLang(): boolean {
+    return this.config.completePaymentRequiresAppLang === true;
+  }
+
+  private generateHashKeyCompletePayment(
+    merchantKey: string,
+    invoiceId: string,
+    orderId: string,
+    status: string,
+    appSecret: string,
+  ): string {
+    const data = [merchantKey, invoiceId, orderId, status].join("|");
+    const iv = sha1Hex(String(randomInt(100000, 999999))).slice(0, 16);
+    const password = sha1Hex(appSecret);
+    const salt = sha1Hex(String(randomInt(100000, 999999))).slice(0, 4);
+    const keyMaterial = sha256Hex(password + salt).slice(0, 32);
+    const cipher = createCipheriv(
+      "aes-256-cbc",
+      Buffer.from(keyMaterial, "utf8"),
+      Buffer.from(iv, "utf8"),
+    );
+    const encrypted =
+      cipher.update(data, "utf8", "base64") + cipher.final("base64");
+    return `${iv}:${salt}:${encrypted}`.replace(/\//g, "__");
+  }
+
   override async sale(
     request: SaleRequest,
     auth: MerchantAuth,
@@ -198,6 +262,7 @@ class CCPaymentGateway extends AbstractGateway {
       ),
       transaction_type: "Auth",
     };
+    this.appendInstallmentCommissionPolicy(body, Number(installment), auth);
     const result = await this.jsonRequest(
       `${baseUrl}/api/paySmart2D`,
       body,
@@ -271,11 +336,12 @@ class CCPaymentGateway extends AbstractGateway {
       ),
       transaction_type: "Auth",
       response_method: "POST",
-      payment_completed_by: "app",
+      payment_completed_by: "merchant",
       ip: request.customer_ip_address,
       cancel_url: request.payment_3d?.return_url,
       return_url: request.payment_3d?.return_url,
     };
+    this.appendInstallmentCommissionPolicy(body, Number(installment), auth);
     const raw = await HttpClient.postJson(`${baseUrl}/api/paySmart3D`, body, {
       Authorization: `Bearer ${token}`,
     });
@@ -291,10 +357,14 @@ class CCPaymentGateway extends AbstractGateway {
     request: Sale3DResponseRequest,
     auth: MerchantAuth,
   ): Promise<SaleResponse> {
-    const ra = request.responseArray;
+    const rawResponse = request.responseArray as
+      | Record<string, unknown>
+      | null
+      | undefined;
+    const ra = rawResponse ?? {};
     const orderNumber = String(ra.invoice_id ?? "");
-    const tx = String(ra.auth_code ?? "");
     const hashKey = String(ra.hash_key ?? "");
+
     if (hashKey) {
       const validated = this.validateHashKey(
         hashKey,
@@ -305,28 +375,76 @@ class CCPaymentGateway extends AbstractGateway {
           status: SaleResponseStatus.Error,
           message: "Hash doğrulanamadı, ödeme onaylanmadı.",
           order_number: orderNumber,
-          transaction_id: tx,
-          private_response: ra,
+          private_response: { response_1: rawResponse ?? ra },
         };
       }
     }
-    const paymentStatus = String(ra.payment_status ?? "");
-    const statusCode = String(ra.status_code ?? "");
-    const success =
-      paymentStatus === "1" ||
-      (this.config.skipPaymentStatusCheck && statusCode === "100");
+
+    if (String(ra.md_status ?? "") === "1") {
+      const baseUrl = this.baseUrl(auth);
+      const token = await this.getToken(baseUrl, auth);
+
+      if (!token) {
+        return {
+          status: SaleResponseStatus.Error,
+          message: "Token alınamadı",
+          order_number: orderNumber,
+          private_response: { response_1: rawResponse ?? ra },
+        };
+      }
+
+      const completeRequest: Record<string, unknown> = {
+        merchant_key: auth.merchant_storekey,
+        invoice_id: orderNumber,
+        order_id: String(ra.order_id ?? ""),
+        status: "complete",
+      };
+
+      if (this.completePaymentRequiresAppLang()) {
+        completeRequest.app_lang = "tr";
+      }
+
+      completeRequest.hash_key = this.generateHashKeyCompletePayment(
+        String(completeRequest.merchant_key ?? ""),
+        String(completeRequest.invoice_id ?? ""),
+        String(completeRequest.order_id ?? ""),
+        String(completeRequest.status ?? "complete"),
+        auth.merchant_password ?? "",
+      );
+
+      const completeResult = await this.jsonRequest(
+        `${baseUrl}/payment/complete`,
+        completeRequest,
+        token,
+      );
+      const data =
+        (completeResult.data as Record<string, unknown> | undefined) ?? {};
+      const success = String(completeResult.status_code ?? "") === "100";
+
+      return {
+        status: success ? SaleResponseStatus.Success : SaleResponseStatus.Error,
+        message: success
+          ? "İşlem başarılı"
+          : String(
+              completeResult.status_description ??
+                "İşlem sırasında bir hata oluştu",
+            ),
+        order_number: orderNumber,
+        transaction_id: success ? String(data.auth_code ?? "") : undefined,
+        private_response: {
+          response_1: rawResponse ?? ra,
+          response_2: completeResult,
+        },
+      };
+    }
+
     return {
-      status: success ? SaleResponseStatus.Success : SaleResponseStatus.Error,
-      message: success
-        ? "İşlem başarılı"
-        : String(
-            ra.error ??
-              ra.status_description ??
-              "İşlem sırasında bir hata oluştu",
-          ),
+      status: SaleResponseStatus.Error,
+      message: String(
+        ra.error ?? ra.status_description ?? "İşlem sırasında bir hata oluştu",
+      ),
       order_number: orderNumber,
-      transaction_id: tx,
-      private_response: ra,
+      private_response: { response_1: rawResponse ?? ra },
     };
   }
 
@@ -407,6 +525,11 @@ class CCPaymentGateway extends AbstractGateway {
         amount: formatAmount(request.amount ?? 0),
         currency_code: String(request.currency ?? CurrencyMap.TRY),
         merchant_key: auth.merchant_storekey,
+        ...(this.commissionPolicy(auth) !== InstallmentCommissionPolicy.Default
+          ? {
+              is_comission_from_user: this.commissionPolicyValue(auth),
+            }
+          : {}),
       },
       token,
     );
@@ -445,6 +568,11 @@ class CCPaymentGateway extends AbstractGateway {
       `${baseUrl}/api/commissions`,
       {
         currency_code: String(request.currency ?? CurrencyMap.TRY),
+        ...(this.commissionPolicy(auth) !== InstallmentCommissionPolicy.Default
+          ? {
+              is_comission_from_user: this.commissionPolicyValue(auth),
+            }
+          : {}),
       },
       token,
     );
@@ -470,10 +598,21 @@ class CCPaymentGateway extends AbstractGateway {
         bank_name: key,
         installment_list: [],
       };
+      let rate = Number(
+        item.user_commission_percentage ?? item.merchant_commission_rate ?? 0,
+      );
+      if (
+        this.commissionPolicy(auth) ===
+        InstallmentCommissionPolicy.AbsorbByMerchant
+      ) {
+        rate = 0;
+      }
+      const amount = request.amount ?? 0;
       existing.installment_list.push({
         installment: Number(item.installments_number ?? 0),
-        rate: Number(item.merchant_commission_rate ?? 0),
-        total_amount: request.amount ?? 0,
+        rate,
+        total_amount:
+          amount > 0 ? Number((amount * (1 + rate / 100)).toFixed(2)) : amount,
       });
       groups.set(key, existing);
     }
@@ -492,6 +631,347 @@ class CCPaymentGateway extends AbstractGateway {
     return {
       status: SaleQueryResponseStatus.Error,
       message: "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor",
+    };
+  }
+}
+
+class PaynetGateway extends AbstractGateway {
+  private static readonly representativeBins: Record<string, string> = {
+    Axess: "413252",
+    Bankkart: "404591",
+    Bonus: "374421",
+    CardFinans: "401072",
+    Maximum: "418342",
+    MilesAndSmiles: "374422",
+    Neo: "474853",
+    Paraf: "415514",
+    ShopAndFly: "377596",
+    Wings: "432071",
+    World: "401622",
+  };
+
+  private baseUrl(auth: MerchantAuth): string {
+    return auth.test_platform ? paynetConfig.testBase : paynetConfig.liveBase;
+  }
+
+  protected async requestJson(
+    url: string,
+    body: Record<string, unknown>,
+    auth: MerchantAuth,
+  ): Promise<Record<string, unknown>> {
+    const raw = await HttpClient.postJson(url, body, {
+      Authorization: this.buildBasicAuthorizationHeader(auth),
+    });
+
+    return JSON.parse(raw) as Record<string, unknown>;
+  }
+
+  private buildBasicAuthorizationHeader(auth: MerchantAuth): string {
+    const credentials = `${auth.merchant_user ?? ""}:${auth.merchant_password ?? ""}`;
+    return `Basic ${Buffer.from(credentials, "utf8").toString("base64")}`;
+  }
+
+  private resolveHost(returnUrl?: string): string {
+    if (!returnUrl) {
+      return "cp.vpos.local";
+    }
+
+    try {
+      return new URL(returnUrl).host || "cp.vpos.local";
+    } catch {
+      return "cp.vpos.local";
+    }
+  }
+
+  private formatSaleAmount(amount: number): string {
+    return toKurus(amount);
+  }
+
+  override async sale(
+    request: SaleRequest,
+    auth: MerchantAuth,
+  ): Promise<SaleResponse> {
+    if (request.payment_3d?.confirm) {
+      return this.sale3D(request, auth);
+    }
+
+    const saleInfo = saleInfoOf(request);
+    const body = {
+      amount: this.formatSaleAmount(saleInfo.amount ?? 0),
+      reference_no: request.order_number,
+      domain: this.resolveHost(request.payment_3d?.return_url),
+      card_holder: saleInfo.card_name_surname,
+      pan: clearNumber(saleInfo.card_number),
+      month: saleInfo.card_expiry_month,
+      year: saleInfo.card_expiry_year,
+      cvc: saleInfo.card_cvv,
+      card_holder_phone: request.invoice_info?.phone_number ?? "",
+      card_holder_mail: request.invoice_info?.email_address ?? "",
+      instalment: Math.max(1, saleInfo.installment ?? 1),
+      add_commission: Math.max(1, saleInfo.installment ?? 1) > 1,
+      transaction_type: 1,
+    };
+
+    const result = await this.requestJson(
+      `${this.baseUrl(auth)}/v2/transaction/payment`,
+      body,
+      auth,
+    );
+
+    if (result.is_succeed === true) {
+      return {
+        status: SaleResponseStatus.Success,
+        message: "İşlem başarılı",
+        order_number: request.order_number,
+        transaction_id: String(result.xact_id ?? ""),
+        private_response: result,
+      };
+    }
+
+    return {
+      status: SaleResponseStatus.Error,
+      message: String(
+        result.paynet_error_message ??
+          result.message ??
+          "Bilinmeyen bir hata oluştu",
+      ),
+      order_number: request.order_number,
+      private_response: result,
+    };
+  }
+
+  private async sale3D(
+    request: SaleRequest,
+    auth: MerchantAuth,
+  ): Promise<SaleResponse> {
+    const saleInfo = saleInfoOf(request);
+    const body = {
+      amount: this.formatSaleAmount(saleInfo.amount ?? 0),
+      reference_no: request.order_number,
+      return_url: request.payment_3d?.return_url ?? "",
+      domain: this.resolveHost(request.payment_3d?.return_url),
+      card_holder: saleInfo.card_name_surname,
+      pan: clearNumber(saleInfo.card_number),
+      month: saleInfo.card_expiry_month,
+      year: saleInfo.card_expiry_year,
+      cvc: saleInfo.card_cvv,
+      card_holder_phone: request.invoice_info?.phone_number ?? "",
+      card_holder_mail: request.invoice_info?.email_address ?? "",
+      instalment: Math.max(1, saleInfo.installment ?? 1),
+      add_commission: Math.max(1, saleInfo.installment ?? 1) > 1,
+      transaction_type: 1,
+    };
+
+    const result = await this.requestJson(
+      `${this.baseUrl(auth)}/v2/transaction/tds_initial`,
+      body,
+      auth,
+    );
+
+    if ([0, 100].includes(Number(result.code ?? -1))) {
+      return {
+        status: SaleResponseStatus.RedirectHTML,
+        message: String(result.html_content ?? ""),
+        order_number: request.order_number,
+        private_response: result,
+      };
+    }
+
+    return {
+      status: SaleResponseStatus.Error,
+      message: String(result.message ?? "Bilinmeyen bir hata oluştu"),
+      order_number: request.order_number,
+      private_response: result,
+    };
+  }
+
+  override async sale3DResponse(
+    request: Sale3DResponseRequest,
+    auth: MerchantAuth,
+  ): Promise<SaleResponse> {
+    const rawResponse = request.responseArray as
+      | Record<string, unknown>
+      | null
+      | undefined;
+    const responseArray = rawResponse ?? {};
+
+    if (
+      responseArray.session_id !== undefined &&
+      responseArray.token_id !== undefined
+    ) {
+      const result = await this.requestJson(
+        `${this.baseUrl(auth)}/v2/transaction/tds_charge`,
+        {
+          session_id: String(responseArray.session_id ?? ""),
+          token_id: String(responseArray.token_id ?? ""),
+          transaction_type: 1,
+        },
+        auth,
+      );
+
+      const success = result.is_succeed === true;
+      return {
+        status: success ? SaleResponseStatus.Success : SaleResponseStatus.Error,
+        message: success
+          ? "İşlem başarılı"
+          : String(
+              result.paynet_error_message ??
+                result.message ??
+                "İşlem sırasında bilinmeyen bir hata oluştu.",
+            ),
+        order_number: String(result.reference_no ?? ""),
+        transaction_id: success ? String(result.xact_id ?? "") : undefined,
+        private_response: {
+          response_1: rawResponse ?? responseArray,
+          response_2: result,
+        },
+      };
+    }
+
+    return {
+      status: SaleResponseStatus.Error,
+      message: String(
+        responseArray.message ??
+          responseArray.paynet_error_message ??
+          "İşlem sırasında bilinmeyen bir hata oluştu.",
+      ),
+      order_number: String(responseArray.reference_no ?? ""),
+      private_response: { response_1: rawResponse ?? responseArray },
+    };
+  }
+
+  override async cancel(
+    request: CancelRequest,
+    auth: MerchantAuth,
+  ): Promise<CancelResponse> {
+    const result = await this.requestJson(
+      `${this.baseUrl(auth)}/v1/transaction/reversed_request`,
+      { xact_id: request.transaction_id },
+      auth,
+    );
+    const success = [0, 100].includes(Number(result.code ?? -1));
+
+    return {
+      status: success ? ResponseStatus.Success : ResponseStatus.Error,
+      message: success
+        ? "İptal işlemi başarılı"
+        : String(result.message ?? "İptal işlemi sırasında bir hata oluştu"),
+      order_number: request.order_number,
+      transaction_id: request.transaction_id,
+      private_response: result,
+    };
+  }
+
+  override async refund(
+    request: RefundRequest,
+    auth: MerchantAuth,
+  ): Promise<RefundResponse> {
+    const result = await this.requestJson(
+      `${this.baseUrl(auth)}/v1/transaction/reversed_request`,
+      {
+        xact_id: request.transaction_id,
+        amount: toKurus(request.refund_amount ?? 0),
+      },
+      auth,
+    );
+    const success = [0, 100].includes(Number(result.code ?? -1));
+
+    return {
+      status: success ? ResponseStatus.Success : ResponseStatus.Error,
+      message: success
+        ? "İade işlemi başarılı"
+        : String(result.message ?? "İade işlemi sırasında bir hata oluştu"),
+      order_number: request.order_number,
+      transaction_id: request.transaction_id,
+      refund_amount: success ? request.refund_amount : undefined,
+      private_response: result,
+    };
+  }
+
+  override async binInstallmentQuery(
+    request: BINInstallmentQueryRequest,
+    auth: MerchantAuth,
+  ): Promise<BINInstallmentQueryResponse> {
+    const result = await this.requestJson(
+      `${this.baseUrl(auth)}/v1/ratio/Get`,
+      {
+        bin: request.BIN,
+        amount: toKurus(request.amount ?? 0),
+        addcomission_to_amount: true,
+      },
+      auth,
+    );
+
+    const firstDataRow = Array.isArray(result.data)
+      ? (result.data[0] as Record<string, unknown> | undefined)
+      : undefined;
+    const ratios = Array.isArray(firstDataRow?.ratio)
+      ? (firstDataRow.ratio as Array<Record<string, unknown>>)
+      : [];
+
+    const installment_list =
+      Number(result.code ?? -1) === 0
+        ? ratios.flatMap((ratio) => {
+            const installment = Number(ratio.instalment ?? 0);
+
+            if (installment <= 1) {
+              return [];
+            }
+
+            const total = Number(ratio.total_amount ?? 0);
+            const amount = request.amount ?? 0;
+            const rate =
+              amount > 0 && total > amount ? (100 * total) / amount - 100 : 0;
+
+            return [
+              {
+                installment,
+                rate: Number(rate.toFixed(2)),
+                total_amount: total,
+              },
+            ];
+          })
+        : [];
+
+    return {
+      confirm: installment_list.length > 0,
+      installment_list,
+      private_response: result,
+    };
+  }
+
+  override async allInstallmentQuery(
+    request: AllInstallmentQueryRequest,
+    auth: MerchantAuth,
+  ): Promise<AllInstallmentQueryResponse> {
+    const installments = [] as AllInstallmentQueryResponse["installments"];
+
+    for (const [programName, bin] of Object.entries(
+      PaynetGateway.representativeBins,
+    )) {
+      const response = await this.binInstallmentQuery(
+        {
+          BIN: bin,
+          amount: request.amount,
+          currency: request.currency,
+        },
+        auth,
+      );
+
+      if (!response.confirm || response.installment_list.length === 0) {
+        continue;
+      }
+
+      installments.push({
+        bank_code: this.bank.bank_code,
+        bank_name: programName,
+        installment_list: response.installment_list,
+      });
+    }
+
+    return {
+      confirm: installments.length > 0,
+      installments,
     };
   }
 }
@@ -1936,7 +2416,19 @@ class IyzicoGateway extends AbstractGateway {
     request: Sale3DResponseRequest,
     auth: MerchantAuth,
   ): Promise<SaleResponse> {
-    const ra = request.responseArray;
+    const rawResponse = request.responseArray as
+      | Record<string, unknown>
+      | null
+      | undefined;
+    if (!rawResponse || Object.keys(rawResponse).length === 0) {
+      return {
+        status: SaleResponseStatus.Error,
+        message: "responseArray boş olamaz",
+        private_response: { response_1: rawResponse ?? null },
+      };
+    }
+
+    const ra = rawResponse;
     if (ra.status === "success" && Number(ra.mdStatus ?? 0) === 1) {
       const result = await this.post(auth, "/payment/3dsecure/auth", {
         locale: "tr",
@@ -1952,15 +2444,18 @@ class IyzicoGateway extends AbstractGateway {
           : String(result.errorMessage ?? "İşlem tamamlanamadı"),
         order_number: String(ra.conversationId ?? ""),
         transaction_id: String(ra.paymentId ?? ""),
-        private_response: { ...ra, threedsPayment: result },
+        private_response: {
+          response_1: ra,
+          response_2: result,
+        },
       };
     }
     return {
       status: SaleResponseStatus.Error,
-      message: "3D doğrulaması başarısız",
+      message: String(ra.errorMessage ?? "Sistem hatası"),
       order_number: String(ra.conversationId ?? ""),
       transaction_id: String(ra.paymentId ?? ""),
-      private_response: ra,
+      private_response: { response_1: ra },
     };
   }
 
@@ -2302,6 +2797,8 @@ export const createRealProviderGateway = (
   if (bank.bank_code in ccpaymentConfig) return new CCPaymentGateway(bank);
   if (bank.bank_code in paytenConfig) return new PaytenGateway(bank);
   switch (bank.bank_code) {
+    case BankCodes.PAYNET:
+      return new PaynetGateway(bank);
     case BankCodes.PARAMPOS:
       return new ParamPosGateway(bank);
     case BankCodes.MOKA:

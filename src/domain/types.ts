@@ -1,5 +1,6 @@
 import type {
   GatewayFamily,
+  InstallmentCommissionPolicyValue,
   ResponseStatusValue,
   SaleQueryResponseStatusValue,
   SaleResponseStatusValue,
@@ -13,6 +14,7 @@ export interface MerchantAuth {
   merchant_password?: string;
   merchant_storekey?: string;
   test_platform?: boolean;
+  installment_commission_policy?: InstallmentCommissionPolicyValue;
 }
 
 export interface CustomerInfo {

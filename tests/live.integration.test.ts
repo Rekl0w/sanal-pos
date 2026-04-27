@@ -28,6 +28,7 @@ const livePrefixes = [
   "ZIRAAT_BANKASI",
   "KUVEYT_TURK",
   "VAKIF_KATILIM",
+  "PAYNET",
   "PAYNKOLAY",
   "HALKODE",
   "TAMI",

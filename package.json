@@ -1,6 +1,6 @@
 {
   "name": "@rekl0w/sanal-pos",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Node.js, Bun ve TypeScript ile kullanılabilen Türkiye odaklı sanal POS orkestrasyon kütüphanesi",
   "author": "Rekl0w",
   "license": "MIT",

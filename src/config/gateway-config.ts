@@ -1,5 +1,10 @@
 import { BankCodes } from "../domain/banks";
 
+export const paynetConfig = {
+  testBase: "https://pts-api.paynet.com.tr",
+  liveBase: "https://api.paynet.com.tr",
+} as const;
+
 export const nestpayConfig = {
   [BankCodes.AKBANK_NESTPAY]: {
     apiLive: "https://www.sanalakpos.com/fim/api",
@@ -81,6 +86,7 @@ export const ccpaymentConfig = {
     liveBase: "https://app.sipay.com.tr/ccpayment",
     skipPaymentStatusCheck: true,
     cardProgramFieldName: "getpos_card_program",
+    completePaymentRequiresAppLang: true,
   },
   [BankCodes.VEPARA]: {
     testBase: "https://test.vepara.com.tr/ccpayment",

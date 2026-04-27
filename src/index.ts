@@ -5,6 +5,7 @@ export {
   CountryMap,
   CurrencyMap,
   GatewayFamilies,
+  InstallmentCommissionPolicy,
   ResponseStatus,
   SaleQueryResponseStatus,
   SaleResponseStatus,

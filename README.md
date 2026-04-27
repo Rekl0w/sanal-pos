@@ -12,7 +12,7 @@ Bu repo iki şekilde kullanılabilir:
 ## Özellikler
 
 - Hono + Node.js/Bun + TypeScript mimarisi
-- Referans listedeki **47 banka / ödeme kuruluşu** kataloğu
+- Referans listedeki **48 banka / ödeme kuruluşu** kataloğu
 - Tek istemci sınıfı: async `SanalPosClient`
 - 3D'siz satış ve 3D satış başlangıç akışları
 - 3D callback / dönüş işleme akışı
@@ -82,6 +82,7 @@ npm install
 | Kuveyt Türk           |  ✔️   |    ✔️    |  ❌   |  ❌  | Gerçek gateway     |
 | Vakıf Katılım         |  ✔️   |    ✔️    |  ❌   |  ❌  | Gerçek gateway     |
 | Ziraat Katılım        |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Fallback / katalog |
+| Paynet                |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
 | PayNKolay             |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
 | HalkÖde               |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
 | Tami                  |  ✔️   |    ✔️    |  ✔️   |  ✔️  | Gerçek gateway     |
@@ -166,32 +167,58 @@ npm audit
 
 ## API bilgileri - `MerchantAuth`
 
-| Alan                | Tür       | Açıklama                                                                              |
-| ------------------- | --------- | ------------------------------------------------------------------------------------- |
-| `bank_code`         | `string`  | Banka / ödeme kuruluşu kodu. `BankCodes` veya `BankService` sabitleri kullanılabilir. |
-| `merchant_id`       | `string`  | Firma kodu / üye işyeri numarası / client code                                        |
-| `merchant_user`     | `string`  | API kullanıcı adı / terminal no / app id                                              |
-| `merchant_password` | `string`  | API şifresi / terminal safe id / secret                                               |
-| `merchant_storekey` | `string`  | 3D store key / merchant key / guid / secret key                                       |
-| `test_platform`     | `boolean` | `true` test ortamı, `false` canlı ortam                                               |
+- `bank_code` (`string`): Banka / ödeme kuruluşu kodu. `BankCodes` veya `BankService` sabitleri kullanılabilir.
+- `merchant_id` (`string`): Firma kodu / üye işyeri numarası / client code.
+- `merchant_user` (`string`): API kullanıcı adı / terminal no / app id.
+- `merchant_password` (`string`): API şifresi / terminal safe id / secret.
+- `merchant_storekey` (`string`): 3D store key / merchant key / guid / secret key.
+- `test_platform` (`boolean`): `true` test ortamı, `false` canlı ortam.
+- `installment_commission_policy` (`InstallmentCommissionPolicy`): CCPayment tabanlı kuruluşlarda taksit komisyon davranışını belirler.
+
+### CCPayment taksit komisyon politikası
+
+`InstallmentCommissionPolicy` sabiti ile CCPayment ailesinde taksit komisyon davranışı kontrol edilebilir:
+
+- `InstallmentCommissionPolicy.Default`: gateway varsayılan davranışını kullanır
+- `InstallmentCommissionPolicy.ChargeToCustomer`: komisyon müşteriye yansıtılır
+- `InstallmentCommissionPolicy.AbsorbByMerchant`: komisyon satıcı üzerinde bırakılır
+
+```ts
+import {
+  BankCodes,
+  InstallmentCommissionPolicy,
+  SanalPosClient,
+} from "@rekl0w/sanal-pos";
+
+await SanalPosClient.sale(request, {
+  bank_code: BankCodes.QNBPAY,
+  merchant_id: "merchant-id",
+  merchant_user: "merchant-user",
+  merchant_password: "merchant-password",
+  merchant_storekey: "merchant-storekey",
+  test_platform: true,
+  installment_commission_policy: InstallmentCommissionPolicy.ChargeToCustomer,
+});
+```
 
 ## Banka bazlı credential alan eşlemesi
 
-| Sanal POS        | `bank_code`              | `merchant_id`            | `merchant_user`   | `merchant_password`                  | `merchant_storekey`      |
-| ---------------- | ------------------------ | ------------------------ | ----------------- | ------------------------------------ | ------------------------ |
-| Akbank           | `BankCodes.AKBANK`       | İş Yeri No               | `merchantSafeId`  | `terminalSafeId`                     | Secret Key               |
-| Nestpay ailesi   | İlgili Nestpay kodu      | Mağaza Kodu              | API Kullanıcısı   | API Şifresi                          | 3D Storekey              |
-| Garanti BBVA     | `BankCodes.GARANTI_BBVA` | Firma Kodu               | Terminal No       | PROVAUT Şifresi                      | 3D Anahtarı              |
-| Vakıfbank        | `BankCodes.VAKIFBANK`    | Üye İşyeri No            | POS No            | API Şifresi                          | —                        |
-| Yapı Kredi       | `BankCodes.YAPI_KREDI`   | Firma Kodu               | Terminal No       | PosNet ID                            | ENCKEY                   |
-| CCPayment ailesi | İlgili CCPayment kodu    | Üye İşyeri ID            | Uygulama Anahtarı | Uygulama Parolası                    | Merchant Key             |
-| ParamPos         | `BankCodes.PARAMPOS`     | Client Code              | Kullanıcı Adı     | Şifre                                | Guid Anahtar             |
-| Moka             | `BankCodes.MOKA`         | Bayi Kodu                | API Kullanıcısı   | API Şifresi                          | —                        |
-| Ahlpay           | `BankCodes.AHLPAY`       | Member ID                | API Kullanıcısı   | API Şifresi                          | API Key                  |
-| Payten ailesi    | İlgili Payten kodu       | Firma Kodu               | API Kullanıcısı   | API Şifresi                          | Dealer Type / ek anahtar |
-| Tami             | `BankCodes.TAMI`         | Üye İşyeri No            | Terminal No       | `KidValue / KValue` (pipe-separated) | Secret Key               |
-| PayNKolay        | `BankCodes.PAYNKOLAY`    | `sx` token / merchant id | `sx` list         | `sx` iptal                           | Secret Key               |
-| Iyzico           | `BankCodes.IYZICO`       | Üye İşyeri No            | API Anahtarı      | Güvenlik Anahtarı                    | —                        |
+| Sanal POS        | `bank_code`              | `merchant_id`            | `merchant_user`      | `merchant_password`                  | `merchant_storekey`      |
+| ---------------- | ------------------------ | ------------------------ | -------------------- | ------------------------------------ | ------------------------ |
+| Akbank           | `BankCodes.AKBANK`       | İş Yeri No               | `merchantSafeId`     | `terminalSafeId`                     | Secret Key               |
+| Nestpay ailesi   | İlgili Nestpay kodu      | Mağaza Kodu              | API Kullanıcısı      | API Şifresi                          | 3D Storekey              |
+| Garanti BBVA     | `BankCodes.GARANTI_BBVA` | Firma Kodu               | Terminal No          | PROVAUT Şifresi                      | 3D Anahtarı              |
+| Vakıfbank        | `BankCodes.VAKIFBANK`    | Üye İşyeri No            | POS No               | API Şifresi                          | —                        |
+| Yapı Kredi       | `BankCodes.YAPI_KREDI`   | Firma Kodu               | Terminal No          | PosNet ID                            | ENCKEY                   |
+| CCPayment ailesi | İlgili CCPayment kodu    | Üye İşyeri ID            | Uygulama Anahtarı    | Uygulama Parolası                    | Merchant Key             |
+| Paynet           | `BankCodes.PAYNET`       | Paynet Merchant ID       | Basic Auth kullanıcı | Basic Auth şifresi                   | —                        |
+| ParamPos         | `BankCodes.PARAMPOS`     | Client Code              | Kullanıcı Adı        | Şifre                                | Guid Anahtar             |
+| Moka             | `BankCodes.MOKA`         | Bayi Kodu                | API Kullanıcısı      | API Şifresi                          | —                        |
+| Ahlpay           | `BankCodes.AHLPAY`       | Member ID                | API Kullanıcısı      | API Şifresi                          | API Key                  |
+| Payten ailesi    | İlgili Payten kodu       | Firma Kodu               | API Kullanıcısı      | API Şifresi                          | Dealer Type / ek anahtar |
+| Tami             | `BankCodes.TAMI`         | Üye İşyeri No            | Terminal No          | `KidValue / KValue` (pipe-separated) | Secret Key               |
+| PayNKolay        | `BankCodes.PAYNKOLAY`    | `sx` token / merchant id | `sx` list            | `sx` iptal                           | Secret Key               |
+| Iyzico           | `BankCodes.IYZICO`       | Üye İşyeri No            | API Anahtarı         | Güvenlik Anahtarı                    | —                        |
 
 ## HTTP API
 

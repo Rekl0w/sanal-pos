@@ -35,6 +35,15 @@ export const ResponseStatus = {
 export type ResponseStatusValue =
   (typeof ResponseStatus)[keyof typeof ResponseStatus];
 
+export const InstallmentCommissionPolicy = {
+  Default: "default",
+  ChargeToCustomer: "charge_to_customer",
+  AbsorbByMerchant: "absorb_by_merchant",
+} as const;
+
+export type InstallmentCommissionPolicyValue =
+  (typeof InstallmentCommissionPolicy)[keyof typeof InstallmentCommissionPolicy];
+
 export const SaleQueryResponseStatus = {
   Found: "found",
   NotFound: "not_found",
@@ -61,6 +70,7 @@ export const GatewayFamilies = [
   "katilim",
   "payten",
   "ccpayment",
+  "paynet",
   "parampos",
   "moka",
   "ahlpay",

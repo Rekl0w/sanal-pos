@@ -32,6 +32,7 @@ export class BankService {
   static readonly KUVEYT_TURK = BankCodes.KUVEYT_TURK;
   static readonly VAKIF_KATILIM = BankCodes.VAKIF_KATILIM;
   static readonly ZIRAAT_KATILIM = BankCodes.ZIRAAT_KATILIM;
+  static readonly PAYNET = BankCodes.PAYNET;
   static readonly HEPSIPAY = BankCodes.HEPSIPAY;
   static readonly CARDPLUS = BankCodes.CARDPLUS;
   static readonly PARATIKA = BankCodes.PARATIKA;
